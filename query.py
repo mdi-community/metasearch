@@ -27,27 +27,46 @@ def do_query(username='',pwd='',url='', quer=''):
     if quer == '': 
       data = { "query": "{}" }
     else:
-      data = {'$and': [{'$or': [{'$and': [{'$or': [{\'dict_content.interatomic-potential.key\': \'.*\'},
-                                                   {\'dict_content.interatomic-potential.key.#text\': \'.*\'}]},   
-                                          {'$or': [{\'dict_content.interatomic-potential.keyword\': \'potentials\'},   
-                                                   {\'dict_content.interatomic-potential.keyword.#text\': \'potentials\'}]}]},   
-                                          {'$or': [{\'dict_content.interatomic-potential.element\': \'Au\'},   
-                                                   {\'dict_content.interatomic-potential.element.#text\': \'Au\'}]}]},   \
-                       {'template': {'$in': ['5cc854118e4b1018a1107e00']}}]}
+      data = {
+               "query": "{   \
+                        \"$and\": [     \
+                                {     \
+                                   \"$or\": [     \
+                                          {     \
+                                             \"dict_content.interatomic-potential.element\": \"Ag\"     \
+                                          },     \
+                                          {     \
+                                             \"dict_content.interatomic-potential.element.#text\": \"Ag\"     \
+                                          }     \
+                                          ]     \
+                                }     \
+                               ]     \
+                        }",     
+                       "template": {
+                          "$in": [
+                             "5cb726f2d2d2054e5f1f5387"
+                          ]
+                       },
+                       "all": "true"
+                }
+
 
     print "Get:"
     response = requests.get(turl, data=data, verify=False, auth=(username, pwd))
     out = response.json()
+    pprint(response)
     pprint(out)
     print "Resp: "
     print response.status_code
     response_code = response.status_code
     response_content = json.loads(response.text)
 
+    resurl = "/explore/common/rest/result"
+    turl = url + resurl
+
     if response_code == requests.codes.ok:
        for rec in response_content:
            pprint(rec)
-           print rec
     else:
         response.raise_for_status()
         raise Exception("- error: a problem occurred when uploading the schema (Error ", response_code, ")")
