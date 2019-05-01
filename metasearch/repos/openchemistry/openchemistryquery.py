@@ -64,8 +64,12 @@ class OpenChemistryQuery(Query):
         
         if len(self.field) >= 1:
             resturl = resturl + "molecules?" + self.field[0] + "=" + self.fieldvalue[0]
+        elif len(self.text) >= 1:
+            resturl = resturl + "molecules?" + "name=" + self.text[0]
+        else:
+            resturl = resturl + "molecules"
         
-        print ("resturl:", resturl)
+        # print ("resturl:", resturl)
         
         response = requests.get(resturl)
         try:
