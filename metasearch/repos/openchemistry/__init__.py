@@ -1,1 +1,1 @@
-from .openchemistryquery import OpenChemistryQuery
+from .openchemistryquery import OpenChemistryQuery, DEFAULT_BASE_URL

@@ -2,8 +2,8 @@ import json
 import requests
 from urllib.parse import urlencode, quote_plus
 
-from query import Query
-from htresult import HTQueryResult
+from ...query import Query
+from .htresult import HTQueryResult
 
 
 DEFAULT_BASE_URL = "https://www.icemaker.afrlmakerhub.com/api/accio/marklogic_search/"

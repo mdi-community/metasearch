@@ -1,7 +1,7 @@
 import json
 import requests
 
-from result import QueryResult
+from ...result import QueryResult
 
 class HTQueryResult(QueryResult):
 
