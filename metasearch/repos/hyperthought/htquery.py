@@ -87,7 +87,7 @@ class HTQuery(Query):
             url = "{}?{}".format(self.base, url_get_params)
             response = requests.get(url)
             try:
-                data = response.json()  # does this need to be wrapped in `json.loads(...)`?
+                data = response.json()
             except json.JSONDecodeError as ex:
                 print("Trouble decoding result: {}".format(response.text))
                 data = {
