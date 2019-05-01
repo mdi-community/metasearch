@@ -2,8 +2,8 @@ import json
 import requests
 from urllib.parse import urlencode, quote_plus
 
-from query import Query
-from htresult import HTQueryResult
+from ...query import Query
+from .htresult import HTQueryResult
 
 
 DEFAULT_BASE_URL = "https://www.icemaker.afrlmakerhub.com/api/accio/marklogic_search/"
@@ -79,8 +79,12 @@ class HTQuery(Query):
         if len(self.field) >= 1:
             params['rs:facets'] = " ".join(self.field)
         url_get_params = urlencode(params, quote_via=quote_plus)
-        url = "https://{}?{}".format(self.baseurl, url_get_params)
+        url = "{}?{}".format(self.base, url_get_params)
         response = requests.get(url)
-        data = json.loads(response.json())
-        results = HTQueryResult(nativedata=data, page_size=20, query=self)
+        try: 
+            data = response.json()
+        except json.JSONDecodeError as ex:
+            print("Trouble decoding result: "+response.text)
+
+        results = HTQueryResult(data)
         return results

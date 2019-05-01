@@ -1,8 +1,8 @@
 import json
 import requests
 
-from result import QueryResult
-from htquery import HTQuery
+from ...result import QueryResult
+# from .htquery import HTQuery
 
 class HTQueryResult(QueryResult):
 
