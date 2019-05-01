@@ -5,6 +5,19 @@ from query import Query
 
 class HTQuery(Query):
 
+    def __init__(self, baseurl, authentication=None):
+        """
+        initialize the query around a base url
+
+        :param str baseurl:   the base URL to the repository's REST search 
+                              endpoint.
+        :param dict authentication:  an object to use for authentication 
+                              (to be defined)
+        """
+        super(HTQuery, self).__init__(baseurl, authentication)
+        self.text = []
+        self.field = []
+
     def add_freetext_constraint(self, term):
         """
         add a constraint to this query.  The result will included records that
@@ -17,8 +30,6 @@ class HTQuery(Query):
                        matches against
         :type  term:   str or list of str
         """
-        if !self.hasproperty('text'):
-            self.text = []
         self.text.append(term)
         return self
 
@@ -33,8 +44,6 @@ class HTQuery(Query):
                                 tread it value as free-text search term.
         :param any testvalue:   the value to test the field against
         """
-        if !self.hasproperty('field'):
-            self.field = []
         self.field.append("{}:\"{}\"".format(fieldname, testvalue))
         return self
 
