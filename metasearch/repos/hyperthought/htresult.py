@@ -15,9 +15,9 @@ class HTQueryResult(QueryResult):
         self.native = copy.deepcopy(nativedata)
         self.need_next = False
         self.current_page = 1
-        self.next = self.query.page(self.current_page + 1).submit()
-        if len(self.next['results']) >= 1:
-            self.need_next = True
+        #self.next = self.query.page(self.current_page + 1).submit()
+        #if len(self.next['results']) >= 1:
+        #    self.need_next = True
 
     def getNative(self):
         """
@@ -28,10 +28,10 @@ class HTQueryResult(QueryResult):
     def _get_next(self):
         self.need_next = False
         self.current_page += 1
-        self.native = copy.deepcopy(self.next)
-        self.next = self.query.page(self.current_page + 1).submit()
-        if len(self.next['results']) >= 1:
-            self.need_next = True
+        #self.native = copy.deepcopy(self.next)
+        #self.next = self.query.page(self.current_page + 1).submit()
+        #if len(self.next['results']) >= 1:
+        #    self.need_next = True
         return
 
     def hasNextPage(self):
