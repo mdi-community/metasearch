@@ -25,48 +25,33 @@ def do_query(username='',pwd='',url='', quer=''):
     print 'status: Excuting Query.'
 
     if quer == '': 
-      data = { "query": "{}" }
+      data = { "query": "{}", "templates": "[{\"id\":\"5cb726f2d2d2054e5f1f5387\"}]", "all":"true"}
     else:
-      data = {
-               "query": "{   \
-                        \"$and\": [     \
-                                {     \
-                                   \"$or\": [     \
-                                          {     \
-                                             \"dict_content.interatomic-potential.element\": \"Ag\"     \
-                                          },     \
-                                          {     \
-                                             \"dict_content.interatomic-potential.element.#text\": \"Ag\"     \
-                                          }     \
-                                          ]     \
-                                }     \
-                               ]     \
+      data = { "query": "{  \"$or\": [ {     \
+                                         \"interatomic-potential.element\": \"Ag\"     \
+                                       },     \
+                                       {     \
+                                         \"interatomic-potential.element.#text\": \"Ag\"     \
+                                       }     \
+                                     ]     \
                         }",     
-                       "template": {
-                          "$in": [
-                             "5cb726f2d2d2054e5f1f5387"
-                          ]
-                       },
-                       "all": "true"
-                }
-
+                       "templates": "[{\"id\":\"5cb726f2d2d2054e5f1f5387\"}]",
+                       "all":"true"}
 
     print "Get:"
     response = requests.get(turl, data=data, verify=False, auth=(username, pwd))
-    out = response.json()
-    pprint(response)
-    pprint(out)
+    #pprint(response.text)
     print "Resp: "
     print response.status_code
     response_code = response.status_code
-    response_content = json.loads(response.text)
-
-    resurl = "/explore/common/rest/result"
-    turl = url + resurl
+    response_content = response.json()
 
     if response_code == requests.codes.ok:
-       for rec in response_content:
-           pprint(rec)
+       print "Count: " + str(response_content['count'])
+       for rec in response_content['results']:
+           print rec['title']
+       print "Next: " + str(response_content['next'])
+       print "Previous: " + str(response_content['previous'])
     else:
         response.raise_for_status()
         raise Exception("- error: a problem occurred when uploading the schema (Error ", response_code, ")")
