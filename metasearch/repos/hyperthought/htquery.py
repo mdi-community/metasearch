@@ -81,10 +81,10 @@ class HTQuery(Query):
         url_get_params = urlencode(params, quote_via=quote_plus)
         url = "{}?{}".format(self.base, url_get_params)
         response = requests.get(url)
-        try: 
-            data = response.json()
+        try:
+            data = response.json()  # does this need to be wrapped in `json.loads(...)`?
         except json.JSONDecodeError as ex:
             print("Trouble decoding result: "+response.text)
 
-        results = HTQueryResult(data)
+        results = HTQueryResult(nativedata=data, page_size=20, query=self)
         return results
