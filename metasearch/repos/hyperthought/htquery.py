@@ -6,7 +6,7 @@ from query import Query
 from htresult import HTQueryResult
 
 
-DEFAULT_BASE_URL = "www.icemaker.afrlmakerhub.com/api/accio/marklogic_search/"
+DEFAULT_BASE_URL = "https://www.icemaker.afrlmakerhub.com/api/accio/marklogic_search/"
 
 class HTQuery(Query):
 
@@ -20,9 +20,8 @@ class HTQuery(Query):
                               (to be defined)
         """
         if baseurl is None:
-            baseurl = DEFAULT_BASE_URL 
+            baseurl = DEFAULT_BASE_URL
         super(HTQuery, self).__init__(baseurl, authentication)
-        self.host = baseurl.split("/")[0]
         self.start = 0
         self.text = []
         self.field = []
@@ -72,7 +71,7 @@ class HTQuery(Query):
                   answered by the repository.
         """
         params = {
-            'rs:graphUri': "http://{}:8016/v1/graphs/mbo".format(self.host),
+            'rs:graphUri': "http://www.icemaker.afrlmakerhub.com:8016/v1/graphs/mbo",
             'rs:start': self.start
         }
         if len(self.text) >= 1:
