@@ -1,23 +1,18 @@
-"""
-Abstract interfaces for capturing results from a query to a repository
-"""
-from abc import ABCMeta, abstractmethod, abstractproperty
+import json
+import requests
 
-class QueryResult(object):
-    """
-    a container for a result from a query to a repository.  This class gives
-    access to summary information about the results and well access to the
-    result in its native form.
-    """
-    __metaclass__ = ABCMeta
+from result import QueryResult
 
-    def __init__(self, page_size=20, nativedata):
+class HTQueryResult(QueryResult):
+
+    def __init__(self, nativedata):
         """
         initialize this result with the native data object returned by the
         repository search service.
         """
-        self.page_size = page_size
-        self.native = nativedata
+        super(HTQueryResult, self).__init__(nativedata)
+        self.next = None
+        self.need_next = True
 
     def getNative(self):
         """
@@ -25,14 +20,21 @@ class QueryResult(object):
         """
         return self.native
 
-    @abstractmethod
+    def _get_next(self):
+        self.need_next = False
+        self.next = None
+        return
+
     def hasNextPage(self):
         """
         return True if it is (or may be) an additional page of results available
         """
-        raise False
+        if self.need_next:
+            self._get_next()
+        if self.next is None:
+            return False
+        return True
 
-    @abstractmethod
     def nextPage(self):
         """
         return a QueryResult object that contains the next page of results
@@ -40,4 +42,7 @@ class QueryResult(object):
 
         :return: QueryResult or None if no further data is available
         """
-        raise NotImplemented()
+        if self.need_next:
+            self._get_next()
+        self.need_next = True
+        return self.next
