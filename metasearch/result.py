@@ -11,12 +11,13 @@ class QueryResult(object):
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, nativedata, page_size=20):
+    def __init__(self, nativedata, page_size=20, query=None):
         """
         initialize this result with the native data object returned by the
         repository search service.
         """
         self.page_size = page_size
+        self.query = query
         self.native = nativedata
 
     def getNative(self):

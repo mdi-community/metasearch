@@ -2,17 +2,17 @@ import json
 import requests
 
 from ...result import QueryResult
+# from .htquery import HTQuery
 
 class HTQueryResult(QueryResult):
 
-    def __init__(self, nativedata):
+    def __init__(self, nativedata, page_size=20, query=None):
         """
         initialize this result with the native data object returned by the
         repository search service.
         """
-        super(HTQueryResult, self).__init__(nativedata)
-        self.next = None
-        self.need_next = True
+        super(HTQueryResult, self).__init__(nativedata, page_size, query)
+        self._get_next()
 
     def getNative(self):
         """
