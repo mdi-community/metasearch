@@ -1,7 +1,7 @@
 from query import Query
 import requests
 import json
-class MDCSQuery(Query):
+class CDCSQuery(Query):
         """
         an encapsulation of a query to a particular repository expressed through
         a general interface.
@@ -41,7 +41,7 @@ class MDCSQuery(Query):
             """
             if isinstance(term,str):
                 {
-                    self.field.append("keyword",term)
+                    self.field.append(("keyword",term),)
                 }
             return self
         def add_field_constraint(self, fieldname, testvalue):
@@ -65,13 +65,12 @@ class MDCSQuery(Query):
             :return:  QueryResult, a container for the results of the query as
                       answered by the repository.
             """
-
-            template_id = "5cc9b1f04a9bdcfb9d7d637b"
             if (not url):
                 {
                 query_url = "/explore/common/rest/local-query"
                 url = "http://mdcs.nist.gov:8000"
                 }
+            url = "http://mdcs.nist.gov:8000"
             turl = url + query_url
             fields = self.field
             dict_name = "interatomic-potential"
@@ -98,9 +97,8 @@ class MDCSQuery(Query):
                 response.raise_for_status()
                 raise Exception("- error: a problem occurred when uploading the schema (Error ", response_code, ")")
             print('status: done.')
-            results = cdcsyResult(nativedata=response_content, page_size=20, query=self)
+            results = cdcsResult(nativedata=response_content, page_size=20, query=self)
             return results
-
 
 
         def supported_fields(self):
