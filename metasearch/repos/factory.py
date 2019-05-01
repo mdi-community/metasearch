@@ -10,8 +10,8 @@ def createDefaultFederation():
     """
     out = Federation()
 
-    out.registerRepository("myHyperThought", ht.DEFAULT_BASE_URL, ht.htquery)
-    out.registerRepository("openchemistry", oc.DEFAULT_BASE_URL,
-                           oc.OpenChemistryQuery)
+    out.registerRepository("myHyperThought", ht.HTQuery, ht.DEFAULT_BASE_URL)
+    out.registerRepository("openchemistry",
+                           oc.OpenChemistryQuery, oc.DEFAULT_BASE_URL)
 
     return out

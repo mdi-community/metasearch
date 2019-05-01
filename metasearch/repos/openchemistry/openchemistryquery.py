@@ -68,4 +68,8 @@ class OpenChemistryQuery(Query):
         print ("resturl:", resturl)
         
         response = requests.get(resturl)
-        return response.json()
+        try:
+            return response.json()
+        except json.JSONDecodeError as ex:
+            print("Trouble decoding response: "+response.text)
+

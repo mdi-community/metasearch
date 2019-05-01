@@ -2,6 +2,7 @@
 Classes and interfaces for creating queries that will go across multiple 
 repositories.
 """
+import traceback as tb
 
 class Federation(object):
     """
@@ -51,21 +52,21 @@ class Federation(object):
                             If None, query all of them.
         """
         if repos is None:
-            repos = list(self.repos)
+            repos = list(self.members)
 
-        unknown = [n for n in repos if n not in self.repos]
+        unknown = [n for n in repos if n not in self.members]
         if len(unknown) > 0:
             raise RuntimeException("Unregistered repos: "+str(unknown))
         
-        repoqueries = []
-        for name in self.repos:
+        repoqueries = {}
+        for name in self.members:
             auth = None
             if name in self.auths:
                 auth = self.auths[name]
-            rq = self.repos[name][0](self.repos[name][1], auth)
-            repoqueries.append(rq)
+            rq = self.members[name][0](self.members[name][1], auth)
+            repoqueries[name] = rq
             
-        return FederatedQuery(self.repoqueries)
+        return FederatedQuery(repoqueries)
 
     
 class FederatedQuery(object):
@@ -122,9 +123,11 @@ class FederatedQuery(object):
         """
 
         # iterate (serially for now) through each repository
-        results = []
+        results = {}
         for name in self.repos:
             repo = self.repos[name]
+
+            print("Querying "+name+"...")
             
             # build the query
             for con in self.textcons:
@@ -132,7 +135,11 @@ class FederatedQuery(object):
             for con in self.fieldcons:
                 repo.add_field_constraint(con)
 
-            results[name] = repo.submit()
+            try:
+                results[name] = repo.submit()
+            except Exception as ex:
+                print("Warning: Trouble querying "+name+": "+repr(ex))
+                results[name] = ex
             
         return results
 

@@ -79,8 +79,12 @@ class HTQuery(Query):
         if len(self.field) >= 1:
             params['rs:facets'] = " ".join(self.field)
         url_get_params = urlencode(params, quote_via=quote_plus)
-        url = "https://{}?{}".format(self.baseurl, url_get_params)
+        url = "{}?{}".format(self.base, url_get_params)
         response = requests.get(url)
-        data = json.loads(response.json())
+        try: 
+            data = response.json()
+        except json.JSONDecodeError as ex:
+            print("Trouble decoding result: "+response.text)
+            
         results = HTQueryResult(data)
         return results
