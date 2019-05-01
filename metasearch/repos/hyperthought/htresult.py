@@ -12,7 +12,9 @@ class HTQueryResult(QueryResult):
         repository search service.
         """
         super(HTQueryResult, self).__init__(nativedata, page_size, query)
-        self._get_next()
+        self.current_page = 1
+        self.need_next = None
+        self.next = None
 
     def getNative(self):
         """
@@ -22,7 +24,8 @@ class HTQueryResult(QueryResult):
 
     def _get_next(self):
         self.need_next = False
-        self.next = None
+        self.current_page += 1
+        self.next = self.query.page(self.current_page).submit()
         return
 
     def hasNextPage(self):

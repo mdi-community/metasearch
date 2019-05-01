@@ -82,5 +82,5 @@ class HTQuery(Query):
         url = "https://{}?{}".format(self.baseurl, url_get_params)
         response = requests.get(url)
         data = json.loads(response.json())
-        results = HTQueryResult(data)
+        results = HTQueryResult(nativedata=data, page_size=20, query=self)
         return results
