@@ -23,6 +23,7 @@ class HTQuery(Query):
             baseurl = DEFAULT_BASE_URL
         super(HTQuery, self).__init__(baseurl, authentication)
         self.start = 0
+        self.page_size = 20
         self.text = []
         self.field = []
 
@@ -58,8 +59,7 @@ class HTQuery(Query):
     def page(self, num=1):
         if num < 1:
             num = 1
-        page_size = 20
-        self.start = int(num) * page_size - page_size
+        self.start = int(num) * self.page_size - self.page_size
         return self
 
     def submit(self):
@@ -70,21 +70,31 @@ class HTQuery(Query):
         :return:  QueryResult, a container for the results of the query as
                   answered by the repository.
         """
-        params = {
-            'rs:graphUri': "http://www.icemaker.afrlmakerhub.com:8016/v1/graphs/mbo",
-            'rs:start': self.start
+        data = {
+            'results': [],
+            'start': self.start,
+            'end': self.start + self.page_size
         }
         if len(self.text) >= 1:
-            params['rs:q'] = " ".join(self.text)
-        if len(self.field) >= 1:
-            params['rs:facets'] = " ".join(self.field)
-        url_get_params = urlencode(params, quote_via=quote_plus)
-        url = "{}?{}".format(self.base, url_get_params)
-        response = requests.get(url)
-        try:
-            data = response.json()  # does this need to be wrapped in `json.loads(...)`?
-        except json.JSONDecodeError as ex:
-            print("Trouble decoding result: "+response.text)
+            params = {
+                'rs:graphUri': "http://www.icemaker.afrlmakerhub.com:8016/v1/graphs/mbo",
+                'rs:start': self.start,
+                'rs:q': " ".join(self.text)
+            }
+            if len(self.field) >= 1:
+                params['rs:facets'] = " ".join(self.field)
+            url_get_params = urlencode(params, quote_via=quote_plus)
+            url = "{}?{}".format(self.base, url_get_params)
+            response = requests.get(url)
+            try:
+                data = response.json()
+            except json.JSONDecodeError as ex:
+                print("Trouble decoding result: {}".format(response.text))
+                data = {
+                    'results': [],
+                    'start': self.start,
+                    'end': self.start + self.page_size
+                }
 
         results = HTQueryResult(nativedata=data, page_size=20, query=self)
         return results

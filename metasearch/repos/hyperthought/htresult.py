@@ -1,8 +1,8 @@
+import copy
 import json
 import requests
 
 from ...result import QueryResult
-# from .htquery import HTQuery
 
 class HTQueryResult(QueryResult):
 
@@ -12,9 +12,12 @@ class HTQueryResult(QueryResult):
         repository search service.
         """
         super(HTQueryResult, self).__init__(nativedata, page_size, query)
+        self.native = copy.deepcopy(nativedata)
+        self.need_next = False
         self.current_page = 1
-        self.need_next = None
-        self.next = None
+        self.next = self.query.page(self.current_page + 1).submit()
+        if len(self.next['results']) >= 1:
+            self.need_next = True
 
     def getNative(self):
         """
@@ -25,7 +28,10 @@ class HTQueryResult(QueryResult):
     def _get_next(self):
         self.need_next = False
         self.current_page += 1
-        self.next = self.query.page(self.current_page).submit()
+        self.native = copy.deepcopy(self.next)
+        self.next = self.query.page(self.current_page + 1).submit()
+        if len(self.next['results']) >= 1:
+            self.need_next = True
         return
 
     def hasNextPage(self):
@@ -47,5 +53,4 @@ class HTQueryResult(QueryResult):
         """
         if self.need_next:
             self._get_next()
-        self.need_next = True
-        return self.next
+        return self.getNative()
