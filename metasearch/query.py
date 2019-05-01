@@ -29,6 +29,10 @@ class Query(object):
         self.base = baseurl
         self.auth = authentication
 
+        # this is a list of commonly defined field names that this repository
+        # will recognize and try to interpret
+        self.supported = []
+
     @abstractmethod
     def add_freetext_constraint(self, term):
         """
@@ -68,4 +72,11 @@ class Query(object):
                   answered by the repository.
         """
         raise NotImplemented()
+
+    def supported_fields(self):
+        """
+        return a list of the field names that this implementation will 
+        recognize and support as searchable.
+        """
+        return list(self.supported)
 
