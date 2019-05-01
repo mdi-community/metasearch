@@ -1,8 +1,9 @@
 """
 Abstract interfaces for capturing results from a query to a repository
 """
+import cdcsquery
 from result import QueryResult
-class QueryResult(object):
+class CDCSQueryResult(object):
     """
     a container for a result from a query to a repository.  This class gives
     access to summary information about the results and well access to the
@@ -10,28 +11,37 @@ class QueryResult(object):
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, nativedata, page_size=20):
+    def __init__(self, nativedata, page_size=20,query):
         """
         initialize this result with the native data object returned by the
         repository search service.
-        """
-        self.page_size = page_size
-        self.native = nativedata
+        """  
+        super(CDCSQueryResult, self).__init__(nativedata, page_size, query)
+        self.native = copy.deepcopy(nativedata)
+        self.need_next = False
+        self.current_page = 1
 
+    def getNext(self):
+        url = self.nativedata['next']
+        return self.nativedata = self.query.submit(url)
+        
     def getNative(self):
         """
         return the query results in its native form
         """
-        return self.native
 
-    @abstractmethod
+        return self.native['results']
+
     def hasNextPage(self):
         """
         return True if it is (or may be) an additional page of results available
         """
-        raise False
+        if (self.nativedata['next']==true)
+        {
+        self.need_next = true 
+        }
+        return self
 
-    @abstractmethod
     def nextPage(self):
         """
         return a QueryResult object that contains the next page of results
@@ -39,4 +49,6 @@ class QueryResult(object):
 
         :return: QueryResult or None if no further data is available
         """
-        raise NotImplemented()
+        if self.need_next:
+            self.get_next()
+        return self.getNative
