@@ -1,20 +1,24 @@
-import requests
 import json
+import requests
+from urllib.parse import urlencode, quote_plus
 
 from query import Query
 
 class HTQuery(Query):
 
-    def __init__(self, baseurl, authentication=None):
+    def __init__(self, baseurl=None, authentication=None):
         """
         initialize the query around a base url
 
-        :param str baseurl:   the base URL to the repository's REST search 
+        :param str baseurl:   the base URL to the repository's REST search
                               endpoint.
-        :param dict authentication:  an object to use for authentication 
+        :param dict authentication:  an object to use for authentication
                               (to be defined)
         """
+        if baseurl is None:
+            baseurl = "www.icemaker.afrlmakerhub.com/api/accio/marklogic_search/"
         super(HTQuery, self).__init__(baseurl, authentication)
+        self.host = baseurl.split("/")[0]
         self.text = []
         self.field = []
 
@@ -44,17 +48,8 @@ class HTQuery(Query):
                                 tread it value as free-text search term.
         :param any testvalue:   the value to test the field against
         """
-        self.field.append("{}:\"{}\"".format(fieldname, testvalue))
+        self.field.append("{}:{}".format(fieldname, testvalue))
         return self
-
-    def _build_search_term(self):
-        terms = []
-        if self.hasproperty('text') and len(self.text) >= 1:
-            terms.append(" AND ".join(self.text))
-        if self.hasproperty('field') and len(self.field) >= 1:
-            terms.append(" AND ".join(self.field))
-        term = " AND ".join(terms)
-        return term
 
     def submit(self):
         """
@@ -64,9 +59,14 @@ class HTQuery(Query):
         :return:  QueryResult, a container for the results of the query as
                   answered by the repository.
         """
-        rest_api_endpoint = "www.icemaker.afrlmakerhub.com/api/accio/marklogic_search/"
-        search_term = self._build_search_term()
-        graph_uri = "http%3A%2F%2Fmarklogic.icemaker.afrlmakerhub.com%3A8016%2Fv1%2Fgraphs%2Fmbo"
-        url = "https://{}?rs%3Aq={}&rs%3AgraphUri={}".format(rest_api_endpoint, search_term, graph_uri)
+        params = {
+            'rs:graphUri': "http://{}:8016/v1/graphs/mbo".format(self.host)
+        }
+        if len(self.text) >= 1:
+            params['rs:q'] = " ".join(self.text)
+        if len(self.field) >= 1:
+            params['rs:facets'] = " ".join(self.field)
+        url_get_params = urlencode(params, quote_via=quote_plus)
+        url = "https://{}?{}".format(self.baseurl, url_get_params)
         response = requests.get(url)
         return response.json()
