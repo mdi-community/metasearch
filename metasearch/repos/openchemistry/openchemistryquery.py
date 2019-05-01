@@ -3,9 +3,11 @@ import json
 
 from ...query import Query
 
+DEFAULT_BASE_URL = "https://beta.openchemistry.org/"
+
 class OpenChemistryQuery(Query):
 
-    def __init__(self, baseurl, authentication=None):
+    def __init__(self, baseurl=DEFAULT_BASE_URL, authentication=None):
         """
         initialize the query around a base url
 
