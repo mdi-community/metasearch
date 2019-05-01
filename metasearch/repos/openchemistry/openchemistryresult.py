@@ -24,6 +24,16 @@ class OpenChemistryQueryResult(QueryResult):
         self.next = None
         return
 
+    def count(self):
+        """
+        return the number of records in this result that matches the 
+        generating query.
+
+        :return: int, the number of matched records
+        """
+        if self.native is not None:
+            return len(self.native)
+
     def hasNextPage(self):
         """
         return True if it is (or may be) an additional page of results available
