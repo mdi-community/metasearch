@@ -3,10 +3,14 @@ import requests
 from urllib.parse import urlencode, quote_plus
 
 from query import Query
+from htresult import HTQueryResult
+
+
+DEFAULT_BASE_URL = "www.icemaker.afrlmakerhub.com/api/accio/marklogic_search/"
 
 class HTQuery(Query):
 
-    def __init__(self, baseurl=None, authentication=None):
+    def __init__(self, baseurl=DEFAULT_BASE_URL, authentication=None):
         """
         initialize the query around a base url
 
@@ -16,9 +20,10 @@ class HTQuery(Query):
                               (to be defined)
         """
         if baseurl is None:
-            baseurl = "www.icemaker.afrlmakerhub.com/api/accio/marklogic_search/"
+            baseurl = DEFAULT_BASE_URL 
         super(HTQuery, self).__init__(baseurl, authentication)
         self.host = baseurl.split("/")[0]
+        self.start = 0
         self.text = []
         self.field = []
 
@@ -51,6 +56,13 @@ class HTQuery(Query):
         self.field.append("{}:{}".format(fieldname, testvalue))
         return self
 
+    def page(self, num=1):
+        if num < 1:
+            num = 1
+        page_size = 20
+        self.start = int(num) * page_size - page_size
+        return self
+
     def submit(self):
         """
         submit the query in its current state to the repository as a full query
@@ -60,7 +72,8 @@ class HTQuery(Query):
                   answered by the repository.
         """
         params = {
-            'rs:graphUri': "http://{}:8016/v1/graphs/mbo".format(self.host)
+            'rs:graphUri': "http://{}:8016/v1/graphs/mbo".format(self.host),
+            'rs:start': self.start
         }
         if len(self.text) >= 1:
             params['rs:q'] = " ".join(self.text)
@@ -69,4 +82,6 @@ class HTQuery(Query):
         url_get_params = urlencode(params, quote_via=quote_plus)
         url = "https://{}?{}".format(self.baseurl, url_get_params)
         response = requests.get(url)
-        return response.json()
+        data = json.loads(response.json())
+        results = HTQueryResult(data)
+        return results
