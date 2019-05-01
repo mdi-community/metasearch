@@ -2,6 +2,7 @@ import requests
 import json
 
 from ...query import Query
+from .openchemistryresult import OpenChemistryQueryResult
 
 DEFAULT_BASE_URL = "https://beta.openchemistry.org/"
 
@@ -73,7 +74,7 @@ class OpenChemistryQuery(Query):
         
         response = requests.get(resturl)
         try:
-            return response.json()
+            return OpenChemistryQueryResult(response.json())
         except json.JSONDecodeError as ex:
             print("Trouble decoding response: "+response.text)
 
