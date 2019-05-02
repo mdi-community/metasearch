@@ -112,7 +112,7 @@ class FederatedQuery(object):
                                 tread it value as free-text search term.
         :param any testvalue:   the value to test the field against
         """
-        self.fieldcons.append( (fieldname, testvalue) )
+        self.fieldcons.append((fieldname, testvalue) )
 
     def submit(self):
         """

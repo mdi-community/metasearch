@@ -25,7 +25,7 @@ class CDCSQuery(Query):
             self.base = baseurl+localurl
             "For mdcs need username/pwd with admin privileges"
             self.auth = authentication
-            super(MDCSQuery).__init__(baseurl,authentication)
+            super(CDCSQuery).__init__(baseurl,authentication)
             self.text = []
             self.field = []
 
@@ -40,9 +40,7 @@ class CDCSQuery(Query):
             :type  term:   str or list of str
             """
             if isinstance(term,str):
-                {
-                    self.field.append(("keyword",term),)
-                }
+                self.field.append(("keyword",term),)
             return self
         def add_field_constraint(self, fieldname, testvalue):
             """
@@ -56,7 +54,7 @@ class CDCSQuery(Query):
             :param any testvalue:   the value to test the field against
             """
             self.field.append((fieldname,testvalue),)
-            return self 
+            return self
 
         def submit(self,url=""):
             """
@@ -65,25 +63,24 @@ class CDCSQuery(Query):
             :return:  QueryResult, a container for the results of the query as
                       answered by the repository.
             """
-            if (not url):
-                {
-                query_url = "/explore/common/rest/local-query"
+            url =""
+            query_url = ""
+            if not url:
                 url = "http://mdcs.nist.gov:8000"
-                }
-            url = "http://mdcs.nist.gov:8000"
+                query_url = "/explore/common/rest/local-query"
+
             turl = url + query_url
+
             fields = self.field
             dict_name = "interatomic-potential"
             query = list()
             query.append("{\"$or\":[")
             for i in range(0, len(fields)):
-                {
-                    query.append(
-                        "{\"" + str(dict_name) + "." + str(fields[i][0]) + "\":\"" + str(fields[i][1]) + "\"},{\"" + str(
-                            dict_name) + "." + str(fields[i][0]) + ".#text\"" + ":\"" + str(fields[i][1]) + "\"},")
-                }
+                query.append("{\"" + str(dict_name) + "." + str(fields[i][0]) + "\":\"" + str(fields[i][1]) + "\"},{\"" + str(dict_name) + "." + str(fields[i][0]) + ".#text\"" + ":\"" + str(fields[i][1]) + "\"},")
+
             final_query = ("".join(query))
             final_query = final_query[0:-1]+"]}"
+            template_id = "5cc9b1f04a9bdcfb9d7d637b"
 
             data1 = {"query": final_query, "template": {"$in": [template_id]}, "all": "true"}
             response = requests.get(turl, data=data1, verify=False, auth=("username", "pwd"))
@@ -97,7 +94,7 @@ class CDCSQuery(Query):
                 response.raise_for_status()
                 raise Exception("- error: a problem occurred when uploading the schema (Error ", response_code, ")")
             print('status: done.')
-            results = cdcsResult(nativedata=response_content, page_size=20, query=self)
+            results = CDCSQueryResult(nativedata=response_content, page_size=20, query=self)
             return results
 
 
