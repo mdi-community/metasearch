@@ -69,6 +69,11 @@ class HTQuery(Query):
         return self
 
     def _raw_submit(self):
+        """
+        this internal method is here to break the infinite loop which would
+        occur if HTQueryResult.nextPage() called .submit() (due to the
+        aforementioned method instantiating an HTQueryResult object).
+        """
         data = {
             'results': [],
             'start': self.start,
