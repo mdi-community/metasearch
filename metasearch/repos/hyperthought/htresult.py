@@ -28,6 +28,7 @@ class HTQueryResult(QueryResult):
 
         :return: QueryResult or None if no further data is available
         """
-        data = self.query.page(self.current_page + 1)._raw_submit()
+        self.current_page += 1
+        data = self.query.page(self.current_page)._raw_submit()
         self.native = copy.deepcopy(data)
         return self.getNative()
