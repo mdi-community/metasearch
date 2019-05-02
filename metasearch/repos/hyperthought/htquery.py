@@ -8,6 +8,7 @@ from .htresult import HTQueryResult
 
 DEFAULT_BASE_URL = "https://www.icemaker.afrlmakerhub.com/api/accio/marklogic_search/"
 
+
 class HTQuery(Query):
 
     def __init__(self, baseurl=DEFAULT_BASE_URL, authentication=None):

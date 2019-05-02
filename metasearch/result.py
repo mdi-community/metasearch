@@ -17,6 +17,11 @@ class QueryResult(object):
         """
         initialize this result with the native data object returned by the
         repository search service.
+
+        :param nativedata:  the raw data returned by a query.
+        :param page_size:  the number of records per page.
+        :param page:  the page in question.
+        :param query:  the query object used to generate this query result.
         """
         self.page_size = page_size
         self.current_page = page

@@ -10,16 +10,21 @@ class HTQueryResult(QueryResult):
         """
         initialize this result with the native data object returned by the
         repository search service.
+
+        :param nativedata:  the raw data returned by a query.
+        :param page_size:  the number of records per page.
+        :param page:  the page in question.
+        :param query:  the query object used to generate this query result.
         """
         if query is not None and hasattr(query, 'page_size'):
             page_size = query.page_size
+            if page_size < 1:
+                page_size = 1
+        if query is not None and hasattr(query, 'start'):
+            page = int(query.start / page_size) + 1
+            if page < 1:
+                page = 1
         super(HTQueryResult, self).__init__(nativedata, page_size, page, query)
-
-    def getNative(self):
-        """
-        return the query results in its native form
-        """
-        return self.native
 
     def nextPage(self):
         """
