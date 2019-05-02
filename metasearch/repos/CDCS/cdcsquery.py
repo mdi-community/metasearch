@@ -35,6 +35,7 @@ class CDCSQuery(Query):
             self.text = []
             self.field = []
 
+
         def add_freetext_constraint(self, term):
             """
             add a constraint to this query.  The result will included records that
@@ -46,10 +47,27 @@ class CDCSQuery(Query):
             :type  term:   str or list of str
             """
             if isinstance(term,str):
+                term="/"+term+"/"
                 self.field.append(("keyword",term))
                 self.field.append(("element",term))
                 self.field.append(("key",term))
                 self.field.append(("description",term))
+                self.field.append(("description.citation.document-type",term))
+                self.field.append(("description.citation.title", term))
+                self.field.append(("description.citation.author", term))
+                self.field.append(("description.citation.publication-name", term))
+                self.field.append(("description.citation.volume", term))
+                self.field.append(("description.citation.issue", term))
+                self.field.append(("description.citation.abstract", term))
+                self.field.append(("description.citation..DOI", term))
+                self.field.append(("description.citation..URL",term))
+                self.field.append(("description.citation.bibtex",term))
+                self.field.append(("description.citation.text-bibliography",term))
+                self.field.append(("description.local.title",term))
+                self.field.append(("description.local.date",term))
+                self.field.append(("description.local.text",term))
+                self.field.append(("fictional-element",term))
+                self.field.append(("other-element",term))
 
             return self
         def add_field_constraint(self, fieldname, testvalue):
@@ -92,6 +110,8 @@ class CDCSQuery(Query):
             final_query = ("".join(query))
             final_query = final_query[0:-1]+"]}"
             template_id = "5cc9b1f04a9bdcfb9d7d637b"
+            if self.field is None and self.text is None :
+                final_query = {"{}"}
             data1 = {"query": final_query, "template": {"$in": [template_id]}, "all": "true"}
             response = requests.get(turl, data=data1, verify=False, auth=(username, pwd))
             response_code = response.status_code
