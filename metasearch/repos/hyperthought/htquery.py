@@ -57,6 +57,11 @@ class HTQuery(Query):
         return self
 
     def page(self, num=1):
+        """
+        set the page number the search query is to return.
+
+        :param num:  the page number .submit() is to return.
+        """
         if num < 1:
             num = 1
         self.start = int(num) * self.page_size - self.page_size
