@@ -62,19 +62,13 @@ class HTQuery(Query):
         self.start = int(num) * self.page_size - self.page_size
         return self
 
-    def submit(self):
-        """
-        submit the query in its current state to the repository as a full query
-        and return the results
-
-        :return:  QueryResult, a container for the results of the query as
-                  answered by the repository.
-        """
+    def _raw_submit(self):
         data = {
             'results': [],
             'start': self.start,
             'end': self.start + self.page_size
         }
+
         if len(self.text) >= 1:
             params = {
                 'rs:graphUri': "http://www.icemaker.afrlmakerhub.com:8016/v1/graphs/mbo",
@@ -89,12 +83,23 @@ class HTQuery(Query):
             try:
                 data = response.json()
             except json.JSONDecodeError as ex:
-                print("Trouble decoding result: {}".format(response.text))
+                print("Trouble decoding response from \"{}\": {}".format(url, response.text))
                 data = {
                     'results': [],
                     'start': self.start,
                     'end': self.start + self.page_size
                 }
 
+        return data
+
+    def submit(self):
+        """
+        submit the query in its current state to the repository as a full query
+        and return the results
+
+        :return:  QueryResult, a container for the results of the query as
+                  answered by the repository.
+        """
+        data = self._raw_submit()
         results = HTQueryResult(nativedata=data, page_size=20, query=self)
         return results

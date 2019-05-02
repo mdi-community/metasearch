@@ -1,6 +1,8 @@
 """
 Abstract interfaces for capturing results from a query to a repository
 """
+import copy
+
 from abc import ABCMeta, abstractmethod, abstractproperty
 
 class QueryResult(object):
@@ -11,14 +13,15 @@ class QueryResult(object):
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, nativedata, page_size=20, query=None):
+    def __init__(self, nativedata, page_size=20, page=1, query=None):
         """
         initialize this result with the native data object returned by the
         repository search service.
         """
         self.page_size = page_size
+        self.current_page = page
         self.query = query
-        self.native = nativedata
+        self.native = copy.deepcopy(nativedata)
 
     def getNative(self):
         """
@@ -29,19 +32,17 @@ class QueryResult(object):
     @abstractmethod
     def count(self):
         """
-        return the number of records in this result that matches the 
+        return the number of records in this result that matches the
         generating query.
 
         :return: int, the number of matched records
         """
         raise NotImplemented()
 
-    @abstractmethod
-    def hasNextPage(self):
-        """
-        return True if it is (or may be) an additional page of results available
-        """
-        raise False
+    # We no longer have a .hasNextPage() method due to not all of the demo
+    # search engines correctly implementing paging.  That is, not all search
+    # engines return the total number of matches with each paged results
+    # response.  :-(
 
     @abstractmethod
     def nextPage(self):
