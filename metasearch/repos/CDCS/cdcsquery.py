@@ -96,13 +96,11 @@ class CDCSQuery(Query):
             response_code = response.status_code
             response_content = json.loads(response.text)
 
-            if response_code == requests.codes.ok:
-                for rec in response_content:
-            else:
+            if response_code != requests.codes.ok:
                 response.raise_for_status()
                 raise Exception("- error: a problem occurred when uploading the schema (Error ", response_code, ")")
 
-            results = CDCSQueryResult(nativedata=response_content, page_size=20, query=self)
+            results = CDCSQueryResult(nativedata=response_content, page_size=20, page = 1, query=self)
             return results
 
 

@@ -10,12 +10,12 @@ class CDCSQueryResult(QueryResult):
     result in its native form.
     """
 
-    def __init__(self, nativedata, page_size=20,query=None):
+    def __init__(self, nativedata, page_size=20,page=1,query=None):
         """
         initialize this result with the native data object returned by the
         repository search service.
         """  
-        super(CDCSQueryResult, self).__init__(nativedata, page_size, page=1, query=query)
+        super(CDCSQueryResult, self).__init__(nativedata, page_size, page=page, query=query)
         self.native = copy.deepcopy(nativedata)
         self.need_next = False
         self.current_page = 1
