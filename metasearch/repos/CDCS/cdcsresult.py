@@ -3,6 +3,8 @@ Abstract interfaces for capturing results from a query to a repository
 """
 import cdcsquery
 from result import QueryResult
+import copy
+
 class CDCSQueryResult(object):
     """
     a container for a result from a query to a repository.  This class gives
@@ -23,7 +25,8 @@ class CDCSQueryResult(object):
 
     def getNext(self):
         url = self.nativedata['next']
-        return self.nativedata = self.query.submit(url)
+        self.nativedata = self.query.submit(url)
+        return
         
     def getNative(self):
         """
@@ -36,10 +39,9 @@ class CDCSQueryResult(object):
         """
         return True if it is (or may be) an additional page of results available
         """
-        if (self.nativedata['next']==true)
-        {
-        self.need_next = true 
-        }
+        if self.nativedata['next'] is not None:
+            self.need_next = 'true'
+
         return self
 
     def nextPage(self):
