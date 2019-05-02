@@ -80,7 +80,8 @@ class CDCSQuery(Query):
                 query_url = "/explore/common/rest/local-query"
 
             turl = url + query_url
-
+            username = "guest"
+            pwd ="guest"
             fields = self.field
             dict_name = "interatomic-potential"
             query = list()
