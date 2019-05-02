@@ -1,6 +1,12 @@
-from query import Query
+from ...query import Query
+from .cdcsresult import CDCSQueryResult
+
 import requests
 import json
+
+DEFAULT_BASE_URL = "http://mdcs.nist.gov:8000"
+
+
 class CDCSQuery(Query):
         """
         an encapsulation of a query to a particular repository expressed through
@@ -25,7 +31,7 @@ class CDCSQuery(Query):
             self.base = baseurl+localurl
             "For mdcs need username/pwd with admin privileges"
             self.auth = authentication
-            super(CDCSQuery).__init__(baseurl,authentication)
+            super(CDCSQuery, self).__init__(baseurl, authentication)
             self.text = []
             self.field = []
 
@@ -40,7 +46,11 @@ class CDCSQuery(Query):
             :type  term:   str or list of str
             """
             if isinstance(term,str):
-                self.field.append(("keyword",term),)
+                self.field.append(("keyword",term))
+                self.field.append(("element",term))
+                self.field.append(("key",term))
+                self.field.append(("description",term))
+
             return self
         def add_field_constraint(self, fieldname, testvalue):
             """
@@ -81,19 +91,17 @@ class CDCSQuery(Query):
             final_query = ("".join(query))
             final_query = final_query[0:-1]+"]}"
             template_id = "5cc9b1f04a9bdcfb9d7d637b"
-
             data1 = {"query": final_query, "template": {"$in": [template_id]}, "all": "true"}
-            response = requests.get(turl, data=data1, verify=False, auth=("username", "pwd"))
+            response = requests.get(turl, data=data1, verify=False, auth=(username, pwd))
             response_code = response.status_code
             response_content = json.loads(response.text)
 
             if response_code == requests.codes.ok:
                 for rec in response_content:
-                    print(rec)
             else:
                 response.raise_for_status()
                 raise Exception("- error: a problem occurred when uploading the schema (Error ", response_code, ")")
-            print('status: done.')
+
             results = CDCSQueryResult(nativedata=response_content, page_size=20, query=self)
             return results
 
